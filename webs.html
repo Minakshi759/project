@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dr. Chinmay Pandya Video Repository</title>
+  <link rel="stylesheet" href="webs.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <h1>Dr. Chinmay Pandya <span style="color: gold">Video Repository</span></h1>
+    <button class="admin-btn">🔔 Admin Panel</button>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h2>डॉ. चिन्मय पंड्या वीडियो संग्रह</h2>
+    <p>आध्यात्मिक ज्ञान - ध्यान - आध्यात्मिक मार्गदर्शन - जीवन प्रबंधन</p>
+    <p>Digital repository of discourses by Dr. Chinmay Pandya on Yoga Science, Vedic Philosophy and Indian Culture</p>
+  </div>
+
+  <!-- Search -->
+  <div class="search-box">
+    <h3>Search Videos</h3>
+    <input type="text" placeholder="Search by keyword, title or topic..." />
+    <div class="filters">
+      <select><option>All Categories</option></select>
+      <select><option>All Years</option></select>
+      <select><option>No Preference</option></select>
+      <input type="text" placeholder="Enter keywords" />
+      <button>Search</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div><h3>420+</h3><p>Videos</p></div>
+    <div><h3>24</h3><p>Categories</p></div>
+    <div><h3>1200+</h3><p>Keywords</p></div>
+    <div><h3>2015</h3><p>Archived Since</p></div>
+  </div>
+
+  <!-- Videos -->
+  <div class="videos" id="video-grid">
+    <!-- JS will inject cards here -->
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div>
+        <h4>About Us</h4>
+        <p>Smart digital library of all Videos by Dr. Chinmay Pandya, where knowledge is accessible and easy to find.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li>Home</li>
+          <li>All Videos</li>
+          <li>Popular Topics</li>
+          <li>Latest Videos</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact Us</h4>
+        <ul>
+          <li>dummyemail@gmail.com</li>
+          <li>+91 XXXXXXXX</li>
+          <li>Shantikunj Video</li>
+          <li>Facebook Page</li>
+        </ul>
+      </div>
+    </div>
+    <p>© 2025 Dr. Chinmay Pandya Video Repository. All Rights Reserved.<br/>Last Updated: 28/6/2025</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+const SHEET_API_URL = 'https://sheets.googleapis.com/v4/spreadsheets/1OPQPUPENDc8CIJ07lMUCECLcwh14wrOKueByGyck9w4/values/Catalog?key=AIzaSyCZXbMfEJy5wREB-gSOF_G4AytuwFuY7AQ';
+
+fetch(SHEET_API_URL)
+  .then(response => response.json())
+  .then(data => {
+    const videoGrid = document.getElementById('video-grid');
+    const headers = data.values[0];
+    const rows = data.values.slice(1);
+
+    rows.forEach(row => {
+      const rowData = {};
+      headers.forEach((header, index) => {
+        rowData[header] = row[index] || "";
+      });
+
+      const title = rowData.Title.trim();
+      const category = rowData.Category.trim();
+      const link = rowData.Link.trim();
+      const keywords = rowData.Keywords.trim();
+      const date = rowData['Date Published']?.trim() || "";
+      const manualThumb = rowData.Thumbnail?.trim() || "";
+      const videoId = extractVideoID(link);
+      const thumbnail = manualThumb || (videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : "");
+
+      if (videoId && title && link) {
+        const card = document.createElement("div");
+        card.className = "video-card";
+        card.innerHTML = `
+          <img src="${thumbnail}" alt="Thumbnail of ${title}">
+          <div class="info">
+            <span>${category || 'No Category'}</span>
+            <h4>${title}</h4>
+             <small>📅 ${date || ''}</small><br/>
+            <a href="${link}" target="_blank">▶️ Watch Video</a>
+          </div>
+        `;
+        videoGrid.appendChild(card);
+      }
+    });
+  })
+  .catch(error => {
+    console.error("Error loading data:", error);
+  });
+
+function extractVideoID(url) {
+  if (!url) return null;
+  const regex = /(?:v=|\/embed\/|\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
+}
+</script>
+
+</body>
+</html>
